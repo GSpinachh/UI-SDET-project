@@ -1,45 +1,65 @@
 import allure
-import pytest
-
-from Services.generator import Generator
-from Pages.AddClient.add_client import AddClient
-from Pages.DeleteClient.delete_client import DeleteClient
-from Pages.SortClients.sort_clients import SortClients
 
 
-@allure.suite('Тесты')
 class Tests:
     @allure.title('Добавить пользователя')
-    def test_add_customer(self, driver):
-        customer_driver = AddClient(driver)
+    @staticmethod
+    def test_add_customer(add_customer_page, customers_page, generator):
+        add_customer_page.open_page()
 
-        customer_driver.open_target_page()
-        code = Generator.generate_code()
-        customer_driver.click_add_customer()
-        customer_driver.fill_all_fields(code)
-        customer_driver.confirm_adding()
-        customer_driver.close_alert()
-        customer_driver.click_customers_btn()
-        customer_driver.check_new_customer_existence(code)
+        code = generator.generate_code()
+        name = generator.generate_name(code)
+
+        add_customer_page.insert_first_name(name)
+        add_customer_page.insert_last_name("Popova")
+        add_customer_page.insert_postcode(code)
+        add_customer_page.confirm_adding()
+
+        alert_text = add_customer_page.handle_alert()
+
+        with allure.step('Смотрим если клиент добавился по выводу окна'):
+            assert 'Customer added successfully' in alert_text, (
+                f'Ошибка при добавлении клиента, "{alert_text}"'
+                )
+        
+        customers_page.open_page()
+        
+        name_list = customers_page.get_customer_names()
+
+        with allure.step('Смотрим если клиент в списке.'):
+            assert name in name_list, (
+                f'Клиент "{name}" не найден в списке.'
+            )
 
     @allure.title('Сортировать пользователей по имени')
-    def test_sort_customers(self, driver):
-        sort_driver = SortClients(driver)
+    @staticmethod
+    def test_sort_customers(customers_page):
+        customers_page.open_page()
 
-        sort_driver.open_target_page()
-        sort_driver.click_customers_btn()
-        sort_driver.click_first_name_btn()
-        sort_driver.click_first_name_btn() 
+        a_z_sort = True
+        customers_page.sort_names(a_z_sort)
 
-        sort_driver.check_names_list()
+        names = customers_page.get_customer_names()
+        sorted_names = sorted(names, key=str.lower)
+
+        with allure.step('Смотрим если клиент добавился в список'):
+            assert names == sorted_names if a_z_sort else reversed(sorted_names), (
+            'Список не отсортирован по алфавиту'
+        )
+
 
     @allure.title('Удалить пользователя, у которого длина имени ближе к среднему арифметическому')
-    def test_delete_customer(self, driver):
-        del_driver = DeleteClient(driver)
+    @staticmethod
+    def test_delete_customer(customers_page, customers_handler):
+        customers_page.open_page()
 
-        del_driver.open_target_page()
-        del_driver.click_customers_btn()
-        customer_id = del_driver.find_optimal_customer()
-        del_codes = del_driver.get_deletion_customer_code(customer_id)
-        del_driver.delete_customer(customer_id)
-        del_driver.check_successful_deletion(del_codes)
+        names = customers_page.get_customer_names()
+        selected_customer = customers_handler.get_fitting_name(names)
+        customers_page.delete_customer(selected_customer)
+
+        name_list = customers_page.get_customer_names()
+
+        with allure.step('Смотрим если клиент удалился из списка'):
+            assert not (selected_customer in name_list), (
+                'Клиент не удалился из списка'
+                )

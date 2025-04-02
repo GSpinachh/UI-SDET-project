@@ -1,5 +1,0 @@
-add_customer = 'Add Customer'
-post_code = 'Post Code'
-first_name = 'First Name'
-last_name = 'Last Name'
-customers = 'Customers'
