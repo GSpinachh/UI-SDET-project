@@ -1,10 +1,7 @@
 import os
-
-
 import allure
 from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
-
 
 from Pages.base_page import BasePage
 
@@ -45,3 +42,4 @@ class AddCustomerPage(BasePage):
         text = alert.text
         alert.accept()
         return text
+    

@@ -1,9 +1,6 @@
 import os
-
-
 import allure
 from selenium.webdriver.common.by import By
-
 
 from Pages.base_page import BasePage
 

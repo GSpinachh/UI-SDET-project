@@ -1,6 +1,4 @@
 import os
-
-
 import allure
 import pytest
 from dotenv import load_dotenv
@@ -19,6 +17,20 @@ def driver():
     _driver.get(os.getenv("WEBSITE_URL"))
     yield _driver
     _driver.quit()
+
+
+@pytest.fixture(scope="function", autouse=True)
+def create_customers(add_customer_page, generator):
+    for _ in range(2):
+        code = generator.generate_code()
+        name = generator.generate_name(code)
+
+        add_customer_page.open_page()
+        add_customer_page.insert_first_name(name)
+        add_customer_page.insert_last_name("Popova")
+        add_customer_page.insert_postcode(code)
+        add_customer_page.confirm_adding()
+        add_customer_page.handle_alert()
 
 
 @pytest.hookimpl(tryfirst=True)

@@ -1,6 +1,5 @@
 import pytest
 
-
 from Services.generator import Generator
 from Services.customers_handler import CustomersHandler
 from Pages.add_customer_page import AddCustomerPage

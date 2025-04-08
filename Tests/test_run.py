@@ -1,6 +1,5 @@
 import allure
 
-
 class Tests:
     @allure.title('Добавить пользователя')
     @staticmethod
@@ -17,16 +16,16 @@ class Tests:
 
         alert_text = add_customer_page.handle_alert()
 
-        with allure.step('Смотрим если клиент добавился по выводу окна'):
+        with allure.step('Проверить, что клиент добавился по выводу окна'):
             assert 'Customer added successfully' in alert_text, (
                 f'Ошибка при добавлении клиента, "{alert_text}"'
-                )
+            )
         
         customers_page.open_page()
         
         name_list = customers_page.get_customer_names()
 
-        with allure.step('Смотрим если клиент в списке.'):
+        with allure.step('Проверить, что клиент в списке'):
             assert name in name_list, (
                 f'Клиент "{name}" не найден в списке.'
             )
@@ -42,11 +41,10 @@ class Tests:
         names = customers_page.get_customer_names()
         sorted_names = sorted(names, key=str.lower)
 
-        with allure.step('Смотрим если клиент добавился в список'):
-            assert names == sorted_names if a_z_sort else reversed(sorted_names), (
-            'Список не отсортирован по алфавиту'
-        )
-
+        with allure.step('Проверить, что список клиентов отсортирован по алфавиту'):
+            assert names == sorted_names if a_z_sort else names == reversed(sorted_names), (
+                'Список не отсортирован по алфавиту'
+            )
 
     @allure.title('Удалить пользователя, у которого длина имени ближе к среднему арифметическому')
     @staticmethod
@@ -55,11 +53,14 @@ class Tests:
 
         names = customers_page.get_customer_names()
         selected_customer = customers_handler.get_fitting_name(names)
-        customers_page.delete_customer(selected_customer)
+        
+        with allure.step('Удалить клиента'):
+            customers_page.delete_customer(selected_customer)
 
         name_list = customers_page.get_customer_names()
 
-        with allure.step('Смотрим если клиент удалился из списка'):
-            assert not (selected_customer in name_list), (
+        with allure.step('Проверить, что клиент удалился из списка'):
+            assert selected_customer not in name_list, (
                 'Клиент не удалился из списка'
-                )
+            )
+

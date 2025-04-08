@@ -14,7 +14,7 @@ https://www.globalsqa.com/angularJs-protractor/BankingProject/#/manager
   3. Установить виртуальную среду: `py -m venv venv`
   4. Активировать виртуальную среду: `venv/Scripts/activate`
   5. Установить зависимости из requirements.txt: `pip install -r requirements.txt`
-  6. Запустить автотесты c аллюром: `pytest --alluredirs allure-reports`
+  6. Запустить автотесты c аллюром: `pytest --alluredir allure-reports`
   7. Просмотреть allure-отчет автотестов: `allure serve allure-reports`
 
 # Задание
